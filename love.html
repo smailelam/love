@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>هل تحبني؟ 🤪</title>
+<style>
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Tahoma', 'Segoe UI', sans-serif;
+    background: linear-gradient(-45deg, #ff9a9e, #fecfef, #a18cd1, #fbc2eb, #ff9a9e);
+    background-size: 400% 400%;
+    animation: bgshift 8s ease infinite;
+    position: relative;
+  }
+  @keyframes bgshift {
+    0%{background-position:0% 50%}
+    50%{background-position:100% 50%}
+    100%{background-position:0% 50%}
+  }
+
+  body.shake { animation: bgshift 8s ease infinite, shake .4s; }
+  @keyframes shake {
+    0%,100%{ transform: translate(0,0); }
+    20%{ transform: translate(-8px,4px) rotate(-1deg); }
+    40%{ transform: translate(8px,-4px) rotate(1deg); }
+    60%{ transform: translate(-6px,-4px) rotate(-1deg); }
+    80%{ transform: translate(6px,4px) rotate(1deg); }
+  }
+
+  .card {
+    background: rgba(255,255,255,0.92);
+    border-radius: 24px;
+    padding: 50px 40px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.25);
+    max-width: 440px;
+    width: 90%;
+    position: relative;
+    display: none;
+    z-index: 5;
+    animation: pop .4s ease;
+  }
+  .card.active { display: block; }
+
+  @keyframes pop {
+    from { transform: scale(0.6) rotate(-8deg); opacity: 0; }
+    to { transform: scale(1) rotate(0); opacity: 1; }
+  }
+
+  h1 {
+    font-size: 26px;
+    color: #d6336c;
+    margin-bottom: 6px;
+  }
+  .sub {
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 10px;
+    min-height: 20px;
+    font-weight: bold;
+  }
+
+  .emoji {
+    font-size: 60px;
+    margin-bottom: 6px;
+    display: inline-block;
+    animation: wiggle 1.2s ease-in-out infinite;
+  }
+  @keyframes wiggle {
+    0%,100%{ transform: rotate(-8deg); }
+    50%{ transform: rotate(8deg); }
+  }
+
+  .btns {
+    position: relative;
+    height: 80px;
+    margin-top: 30px;
+  }
+
+  button {
+    padding: 14px 28px;
+    border: none;
+    border-radius: 50px;
+    font-size: 16px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: transform .12s ease, background .2s ease;
+  }
+
+  .yes-btn {
+    background: #ff5c8a;
+    color: white;
+    position: absolute;
+    left: 50%;
+    transform: translateX(60px);
+    z-index: 2;
+  }
+  .yes-btn:hover { transform: translateX(60px) scale(1.15) rotate(-3deg); }
+
+  .no-btn {
+    background: #e9ecef;
+    color: #333;
+    position: absolute;
+    right: 50%;
+    transform: translateX(-60px);
+    transition: all .1s ease, font-size .2s ease;
+  }
+
+  #final .emoji { font-size: 90px; animation: spin 2s linear infinite; }
+  @keyframes spin { from{transform:rotate(0)} to{transform:rotate(360deg)} }
+  #final h1 { color: #e64980; }
+
+  .counter {
+    position: fixed;
+    top: 14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,0.85);
+    padding: 6px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #d6336c;
+    z-index: 20;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  }
+
+  .hearts, .confetti {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+    z-index: 10;
+  }
+  .heart {
+    position: absolute;
+    bottom: -10%;
+    font-size: 22px;
+    animation: rise linear forwards;
+    opacity: 0.9;
+  }
+  @keyframes rise {
+    to { transform: translateY(-115vh) rotate(360deg); opacity: 0; }
+  }
+  .confetto {
+    position: absolute;
+    top: -5%;
+    animation: fall linear forwards;
+  }
+  @keyframes fall {
+    to { transform: translateY(110vh) rotate(720deg); opacity: 0.3; }
+  }
+
+  .floatemoji {
+    position: fixed;
+    pointer-events: none;
+    font-size: 26px;
+    z-index: 15;
+    animation: floataway 1s ease-out forwards;
+  }
+  @keyframes floataway {
+    to { transform: translateY(-60px) scale(1.6); opacity: 0; }
+  }
+</style>
+</head>
+<body id="body">
+
+<div class="counter" id="counter">حاولات الهروب: 0</div>
+<div class="hearts" id="hearts"></div>
+<div class="confetti" id="confetti"></div>
+
+<!-- الصفحة الأولى -->
+<div class="card active" id="page1">
+  <div class="emoji">💘</div>
+  <h1>هل تحبني؟</h1>
+  <div class="sub" id="sub1"></div>
+  <div class="btns">
+    <button class="yes-btn" onclick="goTo('page2')">نعم</button>
+    <button class="no-btn" id="noBtn1" onmouseover="runAway(this,1)" onclick="runAway(this,1)">لا</button>
+  </div>
+</div>
+
+<!-- صفحة التأكيد -->
+<div class="card" id="page2">
+  <div class="emoji">🤔</div>
+  <h1>واش متأكدة؟؟</h1>
+  <div class="sub" id="sub2"></div>
+  <div class="btns">
+    <button class="yes-btn" onclick="goTo('final')">لا</button>
+    <button class="no-btn" id="noBtn2" onmouseover="runAway(this,2)" onclick="runAway(this,2)">أكيد متأكدة 💕</button>
+  </div>
+</div>
+
+<!-- الصفحة النهائية -->
+<div class="card" id="final">
+  <div class="emoji">🥳❤️</div>
+  <h1>يعططططيك الصحة!! 🎉</h1>
+  <p style="color:#555;" id="finalMsg">نتا بصح ماشي مزيان... راه هرب 47 مرة قبل ما تقول نعم 😂</p>
+</div>
+
+<script>
+let escapeCount = 0;
+const excuses1 = [
+  "أوه لا، مشيت بعيد شوية 🙈",
+  "حاولي عاود، ماشي هكا غادي تربحي 😜",
+  "الزر هربان، أنا هنا كنستناك 🥺",
+  "هههه ماشي بهاد السهولة 😂",
+  "قريبة... بصح لا 🤭"
+];
+const excuses2 = [
+  "لا لا لا، إعادي التفكير 🤨",
+  "متأكدة بزاف متأكدة؟ 😏",
+  "الزر خايف يوقف 😅",
+  "غير كليكي على لا و سالينا 💘",
+  "هروب رقم " ,
+];
+
+function updateCounter(){
+  document.getElementById('counter').textContent = 'حاولات الهروب: ' + escapeCount;
+}
+
+function goTo(id){
+  document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  if(id === 'final'){
+    document.getElementById('finalMsg').textContent =
+      'نتا بصح ماشي مزيان... راه هرب ' + escapeCount + ' مرة قبل ما تقول نعم 😂❤️';
+    launchHearts();
+    launchConfetti();
+  }
+}
+
+function runAway(btn, page){
+  escapeCount++;
+  updateCounter();
+  document.getElementById('body').classList.remove('shake');
+  void document.getElementById('body').offsetWidth;
+  document.getElementById('body').classList.add('shake');
+
+  const maxX = 130, maxY = 45;
+  const x = (Math.random() * maxX * 2) - maxX;
+  const y = (Math.random() * maxY * 2) - maxY;
+  btn.style.transform = `translate(${x}px, ${y}px) rotate(${(Math.random()*40-20)}deg)`;
+
+  // الزر كيصغر شوية بزاف حتى يولي صغيبيبير
+  let size = Math.max(9, 16 - escapeCount * 0.4);
+  btn.style.fontSize = size + 'px';
+
+  const sub = document.getElementById('sub' + page);
+  const list = page === 1 ? excuses1 : excuses2;
+  sub.textContent = list[Math.floor(Math.random()*list.length)] + (page===2 ? escapeCount : '');
+
+  spawnFloatEmoji(btn);
+}
+
+function spawnFloatEmoji(btn){
+  const rect = btn.getBoundingClientRect();
+  const emojis = ['😂','🙈','😜','💨','🤭'];
+  const e = document.createElement('div');
+  e.className = 'floatemoji';
+  e.textContent = emojis[Math.floor(Math.random()*emojis.length)];
+  e.style.left = rect.left + rect.width/2 + 'px';
+  e.style.top = rect.top + 'px';
+  document.body.appendChild(e);
+  setTimeout(()=> e.remove(), 1000);
+}
+
+function launchHearts(){
+  const container = document.getElementById('hearts');
+  const symbols = ['❤️','💖','💕','💗','💓','😍'];
+  for(let i=0;i<50;i++){
+    setTimeout(()=>{
+      const h = document.createElement('div');
+      h.className = 'heart';
+      h.textContent = symbols[Math.floor(Math.random()*symbols.length)];
+      h.style.left = Math.random()*100 + 'vw';
+      h.style.animationDuration = (3 + Math.random()*3) + 's';
+      h.style.fontSize = (16 + Math.random()*22) + 'px';
+      container.appendChild(h);
+      setTimeout(()=> h.remove(), 7000);
+    }, i*70);
+  }
+}
+
+function launchConfetti(){
+  const container = document.getElementById('confetti');
+  const colors = ['#ff5c8a','#ffd43b','#63e6be','#748ffc','#ff8787','#e599f7'];
+  for(let i=0;i<70;i++){
+    setTimeout(()=>{
+      const c = document.createElement('div');
+      c.className = 'confetto';
+      c.style.left = Math.random()*100 + 'vw';
+      c.style.width = c.style.height = (6 + Math.random()*8) + 'px';
+      c.style.background = colors[Math.floor(Math.random()*colors.length)];
+      c.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+      c.style.animationDuration = (2.5 + Math.random()*3) + 's';
+      container.appendChild(c);
+      setTimeout(()=> c.remove(), 6000);
+    }, i*40);
+  }
+}
+</script>
+
+</body>
+</html>
